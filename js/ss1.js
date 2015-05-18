@@ -136,5 +136,24 @@ function start(primes) {
     }
 
 
+
+
+
 }
+
+
+function startUI(matrix, secret, indep){
+    
+    var secrets = document.getElementById('secrets');
+    var keys = document.getElementById('keys');
+    
+    
+    
+     
+    
+    
+}
+
+
+
 console.log("Part 1: Secret Sharing/end");
