@@ -1,0 +1,16 @@
+/* 
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+
+console.log("Part 2: Shamir Polynomial/start");
+
+var content = document.getElementById('content');
+
+
+
+
+
+console.log("Part 2: Shamir Polynomial/end");
