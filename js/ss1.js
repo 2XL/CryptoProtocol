@@ -4,11 +4,22 @@
  * and open the template in the editor.
  */
 
+console.log("use?big=t"); // demo with big numbers
 
 console.log("Part 1: Secret Sharing/start");
 console.log("(esquemes vectorials), G.R. Blakley...");
 
 var content = document.getElementById('content');
+var taInput = document.getElementById('messageIn');
+var taOutput = document.getElementById('messageOut');
+// var inputKeys = document.getElementById('inputKeys');
+var preSecret = document.getElementById('secrets');
+var preKeys = document.getElementById('keys');
+var settings = document.getElementById('settings');
+var btnDecrypt = document.getElementById('btn-decrypt');
+btnDecrypt.onclick = decrypt;
+// var btnEncrypt = document.getElementById('btn-encrypt').addEventListener('onclick', decrypt(taInput.innerHTML, inputKeys.innerHTML));
+
 
 
 console.log(Number.MAX_SAFE_INTEGER); // 9007199254740991
@@ -16,7 +27,9 @@ var range = {
     max: Math.pow(2, 53) - 1, // 9007199254740991
     min: -(Math.pow(2, 53) - 1), // -9007199254740991
     val: Math.pow(10, 15) - 1, // 999999999999999 // 15 digits
-    test: Number.MAX_SAFE_INTEGER
+    lenKeys: Number.MAX_SAFE_INTEGER,
+    lenSecrets: 16,
+    value: 0
 };
 
 var key_min_size = 100; // key size of atleast 100 digits
@@ -28,9 +41,9 @@ var key = [15, 30, 45, 60, 75, 90, 105];
 // sub admirals has 1
 // 
 
-var n = 10; // nº participants // 10 equacions
-var m = 7; // minim participants per poder recuperar la clau. 
-
+var n = (getParameterByName('n') === "") ? 10 : getParameterByName('n'); // nº participants // 10 equacions
+var m = (getParameterByName('m') === "") ? 7 : getParameterByName('m'); // minim participants per poder recuperar la clau. 
+range.value = getParameterByName('r') === '' ? range.lenSecrets : getParameterByName('r');
 
 
 
@@ -114,45 +127,151 @@ function start(primes) {
 	matrix[i][0] = list_primes[i];
 	for (var j = 1; j < m; j++) {
 
-	    matrix[i][j] = Math.floor(Math.random() * range.test);
+	    matrix[i][j] = Math.floor(Math.random() * (range.value));
 	    matrix[i][j] *= (Math.random() > 0.5) ? 1 : -1;
 	}
     }
-    
+
     secret = [];
     for (var i = 0; i < m; i++) {
-	secret[i] = Math.floor(Math.random() * range.test);
+	secret[i] = Math.floor(Math.random() * (range.value));
 	// secret[i] *= (Math.random() > 0.5) ? 1 : -1;
     }
 
     independent = [];
-    for (var i = 0; i< m; i++){
-	var temp = matrix[i].map(function(data, idx){
-	    return data*secret[idx];
-	}).reduce(function(a, b){
-	    return a+b;
+    for (var i = 0; i < n; i++) {
+	var temp = matrix[i].map(function (data, idx) {
+	    return data * secret[idx];
+	}).reduce(function (a, b) {
+	    return a + b;
 	});
 	independent[i] = temp;
     }
 
 
+    startUI(matrix, secret, independent);
+
+
+}
+
+
+function startUI(matrix, secret, indep) {
+    console.log("Start User Interface");
+
+    settings.innerHTML += "m =" + m + " n=" + n;
+
+    preSecret.innerHTML = syntaxHighlight({secret: secret});
+
+    // convertir matrix + indep en format equació
+
+    var alphabet = "abcdefghijklmnopqrstuvwxyz".split(""); // we have up to 26 characters
+    /*
+     .each(alphabet, function (letter) {
+     console.log(letter);
+     });
+     */
+
+    var equations = matrix.map(function (items, idx) {
+	return items.map(function (item, idx) {
+	    return ((item >= 0) ? '+' : '') + item + alphabet[idx];
+	}).toString().replace(/,/g, '\t') + '= \t' + indep[idx];
+    }).toString().replace(/,/g, '<br>');
+    console.log(equations);
+
+
+
+    preKeys.innerHTML = equations;
+
 
 
 
 }
 
 
-function startUI(matrix, secret, indep){
-    
-    var secrets = document.getElementById('secrets');
-    var keys = document.getElementById('keys');
-    
-    
-    
-     
-    
-    
+function encrypt(message, key) {
+    // utilizar la llibreria triplesec...etc
+    // agafar el missatge i tractarho amb la clau...
+    // la claus sera secret.toString
 }
+
+
+function decrypt() {
+    console.log("Resolve Sys Equations");
+    result = {}; // sera un json array
+    equacions = taInput.value;
+    num_equations = equacions
+	    .replace(/[a-z]/g, '')
+	    .replace(/=/g, '')
+	    .split('\n');
+    if (num_equations.length < m) {
+	console.error("Too few Equations");
+    } else {
+	console.log("Compute!")
+	array_list = num_equations.map(function (items) {
+	    return items.split('\t').map(function (item) {
+		return parseInt(item);
+	    });
+	});
+
+	// solve the matrix 
+	mat = [];
+	vect = [];
+	for (var i = 0; i < m; i++) {
+	    mat[i] = [];
+	    for (var j = 0; j < m; j++) {
+		mat[i][j] = array_list[i][j]
+	    }
+	    vect[i] = array_list[i][m];
+	}
+	// solve the linear equation mat and vect
+	// compute the inverse
+	mat_inv = pinv(mat);
+	sol = numeric.dot(mat_inv, vect);
+	console.log(sol);
+
+	taOutput.value = JSON.stringify({sol: sol}, 0, 2, null);
+
+
+    }
+    // resoldre system d'equacions per esbrinar el secret 
+    // utilitzar la llibreria numeric-...etc
+}
+
+function pinv(A) {
+    return numeric.dot(numeric.inv(numeric.dot(numeric.transpose(A), A)), numeric.transpose(A));
+}
+
+
+
+function syntaxHighlight(json) {
+    if (typeof json != 'string') {
+	json = JSON.stringify(json, undefined, 2);
+    }
+    json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+	var cls = 'number';
+	if (/^"/.test(match)) {
+	    if (/:$/.test(match)) {
+		cls = 'key';
+	    } else {
+		cls = 'string';
+	    }
+	} else if (/true|false/.test(match)) {
+	    cls = 'boolean';
+	} else if (/null/.test(match)) {
+	    cls = 'null';
+	}
+	return '<span class="' + cls + '">' + match + '</span>';
+    });
+}
+
+function getParameterByName(name) {
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+	    results = regex.exec(location.search);
+    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+}
+
 
 
 

@@ -15,16 +15,13 @@ and open the template in the editor.
         <link rel="apple-touch-icon" href="apple-touch-icon.png">
 
         <link rel="stylesheet" href="css/bootstrap.min.css">
-        <style>
-            body {
-                padding-top: 50px;
-                padding-bottom: 20px;
-            }
+        <style> 
         </style>
         <link rel="stylesheet" href="css/bootstrap-theme.min.css">
         <link rel="stylesheet" href="css/main.css">
 
         <script src="js/vendor/modernizr-2.8.3-respond-1.4.2.min.js"></script>
+	<script src="js/numeric-1.2.6.js"></script>
     </head>
     <body>
 
@@ -32,8 +29,10 @@ and open the template in the editor.
 
 
 	<div class="container" id="content">
-	    Esquemes de compartició de secrets 
-	    Secret Sharing
+	    <p id="settings">
+		Esquemes de compartició de secrets 
+		Secret Sharing
+	    </p>
 	</div>
 	<div>
 	    <!-- El matriu complet --> 
@@ -47,9 +46,31 @@ and open the template in the editor.
 		
 	    </pre>
 	</div>
+
+
+
 	<div>
-	    
+	    <label for="messageIn">Input</label>
+	    <textarea id="messageIn" class="form-control" rows="7" placeholder="Paste m Lines from Above"></textarea>
+	    <label for="messageOut">Output</label>
+	    <textarea id="messageOut" class="form-control" rows="7" placeholder="S Output Text"></textarea>
+	    <!--
+	    <label for="inputKeys">Keys</label>
+	    <textarea id="inputKeys" class="form-control" rows="7"  placeholder="Keys">
+		[#,#,#,#,#][#,#,#,#,#][#,#,#,#,#][#,#,#,#,#][#,#,#,#,#]...
+	    </textarea>
+	    -->
+	    <!--
+	    <div class="btn btn-success" id="btn-encrypt" >
+		Encrypt
+	    </div>
+	    -->
+	    <button class="btn btn-primary" id="btn-decrypt">
+		Resolve
+	    </button>
 	</div>
+
+
 
 	<footer>
 	    <p>&copy; Julio 2015</p>
