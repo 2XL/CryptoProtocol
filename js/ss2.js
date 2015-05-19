@@ -41,8 +41,8 @@ var range = {
 
 
 
-var n = (getParameterByName('n') === "") ? 5 : getParameterByName('n'); // nº participants // 10 equacions
-var m = (getParameterByName('m') === "") ? 2 : getParameterByName('m'); // minim participants per poder recuperar la clau. 
+var n = (getParameterByName('n') === "") ? 6 : getParameterByName('n'); // nº participants // 10 equacions
+var m = (getParameterByName('m') === "") ? 3 : getParameterByName('m'); // minim participants per poder recuperar la clau. 
 range.value = getParameterByName('r') === '' ? range.lenSecrets : getParameterByName('r');
 
 
@@ -102,14 +102,14 @@ function start(primes) {
     }
     console.log("Public Prime: " + P);
 
-    S = (Math.round((Math.random() * P))); // (p > S)
+    S = 1234; //(Math.round((Math.random() * P))); // (p > S)
     console.log("Secret Secrt: " + S);
 
     pol = [];  // has to be degree m-1
     for (var i = 0; i < m - 1; i++) {
 	pol[i] = primes[Math.round(Math.random() * primes.length)];
     } // This are the secret 
-
+    pol = [166, 94]
     Px = "P(x) = " + S + " +";
 
     Pg = pol.map(function (item, idx) {
@@ -128,6 +128,7 @@ function start(primes) {
     for (var i = 0; i < n; i++) {
 	do {
 	    var value = Math.round(Math.random() * P);
+	    value = i+1;
 	    if (xrandHit[value] === undefined) {
 		xrandHit[value] = value; // store the operation result
 
@@ -184,17 +185,17 @@ function decrypt() {
     var eqIndep = [];
     var eqs = result.map(function (item, idx) {
 	var eq = [];
-	//eq[0] = S;
-	for (var x = 0; x < m; x++) {
-	    eq[x] = Math.pow(item.x, x) % P;
+	eq[0] =  1;
+	for (var x = 1; x < m; x++) {
+	    eq.push( Math.pow(item.x, x) % P );
 	}
-	eqIndep[idx] = item.px - S;
+	eqIndep[idx] = item.px;
 	console.log(eq);
 	return eq;
     });
 
     // nomes queda resoldre equacions
-    console.log(eqs);
+    console.log(JSON.stringify(eqs));
     console.log(eqIndep);
 
     //mat_inv = pinv(eqs);
@@ -206,9 +207,9 @@ function decrypt() {
 	return Math.round(item % P);
     });
 
-    console.log(sol);
+ 
     taOutput.value = JSON.stringify({sol: sol}, 0, 2, null);
-
+ // http://userpages.umbc.edu/~relan1/Day1%20Secret%20Sharing.pdf
 
 }
 
