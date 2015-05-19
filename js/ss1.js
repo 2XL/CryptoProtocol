@@ -225,8 +225,9 @@ function decrypt() {
 	}
 	// solve the linear equation mat and vect
 	// compute the inverse
-	mat_inv = pinv(mat);
-	sol = numeric.dot(mat_inv, vect);
+	//mat_inv = pinv(mat);
+	//sol = numeric.dot(mat_inv, vect);
+	sol = numeric.solve(mat, vect);
 	console.log(sol);
 	sol = sol.map(function(item){
 	    return Math.round(item);
