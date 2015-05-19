@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-console.log("use?big=t"); // demo with big numbers
+console.log("use?m=#&n=#&r=#"); // demo with big numbers
 
 console.log("Part 1: Secret Sharing/start");
 console.log("(esquemes vectorials), G.R. Blakley...");
@@ -134,7 +134,7 @@ function start(primes) {
 
     secret = [];
     for (var i = 0; i < m; i++) {
-	secret[i] = Math.floor(Math.random() * (range.value));
+	secret[i] = Math.floor(Math.random() * (range.value)) +1; // cannot be 0
 	// secret[i] *= (Math.random() > 0.5) ? 1 : -1;
     }
 
@@ -228,7 +228,9 @@ function decrypt() {
 	mat_inv = pinv(mat);
 	sol = numeric.dot(mat_inv, vect);
 	console.log(sol);
-
+	sol = sol.map(function(item){
+	    return Math.round(item);
+	});
 	taOutput.value = JSON.stringify({sol: sol}, 0, 2, null);
 
 
@@ -236,43 +238,6 @@ function decrypt() {
     // resoldre system d'equacions per esbrinar el secret 
     // utilitzar la llibreria numeric-...etc
 }
-
-function pinv(A) {
-    return numeric.dot(numeric.inv(numeric.dot(numeric.transpose(A), A)), numeric.transpose(A));
-}
-
-
-
-function syntaxHighlight(json) {
-    if (typeof json != 'string') {
-	json = JSON.stringify(json, undefined, 2);
-    }
-    json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
-	var cls = 'number';
-	if (/^"/.test(match)) {
-	    if (/:$/.test(match)) {
-		cls = 'key';
-	    } else {
-		cls = 'string';
-	    }
-	} else if (/true|false/.test(match)) {
-	    cls = 'boolean';
-	} else if (/null/.test(match)) {
-	    cls = 'null';
-	}
-	return '<span class="' + cls + '">' + match + '</span>';
-    });
-}
-
-function getParameterByName(name) {
-    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-	    results = regex.exec(location.search);
-    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
-}
-
-
 
 
 console.log("Part 1: Secret Sharing/end");
